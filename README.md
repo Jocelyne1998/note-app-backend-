@@ -8,5 +8,13 @@ https://www.rust-lang.org/tools/install
 rustup toolchain install nightly
 rustup default nightly
 
-# Clone this project and run it:
-cargo run
+## Add a PostgreSQL Database
+
+# Run and attach tty session
+docker-compose up
+
+# Run app in the background
+docker-compose up -d
+
+# Get psql client connected to the library db
+docker exec -ti conection_postgres psql -U postgres -d library
