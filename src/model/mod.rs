@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Clone, Serialize, Deserialize)]
 pub struct Note {
     pub title: String,
-    pub status: bool,
+    pub status: String,
 }
 
 #[derive(Debug)]
