@@ -18,12 +18,20 @@ pub fn get_pool() -> Pool<PostgresConnectionManager<NoTls>> {
     Pool::builder().max_size(pool_size).build(manager).unwrap()
 }
 
-pub fn insert_note(note: &Note, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
+pub fn modify_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
     let statement = db
         .prepare(
-            "insert into notes (title, status) values ($1, $2)",
+            "update notes set status = 0 where title = $1",
         )?;
-    db.query(&statement, &[&note.title, &note.status])
+    db.query(&statement, &[&title])
+}
+
+pub fn insert_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
+    let statement = db
+        .prepare(
+            "insert into notes (title, status) values ($1, '1')",
+        )?;
+    db.query(&statement, &[&title])
 }
 
 pub fn read_notes(db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Note>, Error> {
@@ -44,29 +52,28 @@ pub fn read_notes(db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -
     Ok(notes)
 }
 
-pub fn read_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Option<Note>, Error> {
+pub fn read_note(status: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Note>, Error> {
     let statement = db
         .prepare(
-            "select * from notes where title = $1 ",
+            "select * from notes where status = $1 ",
         )?;
-
-    let note: Option<Note> = db.query(&statement, &[&title])?
+        let notes: Vec<Note> = db.query(&statement, &[&status])?
         .iter()
-        .fold(None, |_acc, row| {
+        .map(|row| {
             let title: String = row.get("title");
             let status: String = row.get("status");
-            Some(Note {
+            Note {
                 title,
                 status,
-            })
-        });
-    Ok(note)
+            }
+        }).collect();
+    Ok(notes)
 }
 
-pub fn delete_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
+pub fn delete_notes(db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
     let statement = db
         .prepare(
-            "delete from notes where title = $1",
+            "delete from notes where status = '0'",
         )?;
-    db.query(&statement, &[&title])
+    db.query(&statement, &[])
 }
