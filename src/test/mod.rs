@@ -1,4 +1,5 @@
-use crate::db::*;
+use lib::db;
+use lib::db::get_pool;
 use lib::model::{Note, Storage};
 
 #[cfg(test)]
@@ -7,7 +8,7 @@ mod test {
 
     #[test]
     fn test_delete_note() {
-        let res = delete_note();
+        let res = db::delete_notes();
         assert!(res.is_ok());
     }
 

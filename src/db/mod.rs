@@ -3,7 +3,6 @@ use postgres::NoTls;
 use postgres::Row;
 use r2d2::{Pool, PooledConnection};
 use r2d2_postgres::PostgresConnectionManager;
-
 use std::env;
 
 use crate::model::Note;
@@ -18,12 +17,12 @@ pub fn get_pool() -> Pool<PostgresConnectionManager<NoTls>> {
     Pool::builder().max_size(pool_size).build(manager).unwrap()
 }
 
-pub fn modify_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
+pub fn modify_note(note: &Note, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {
     let statement = db
         .prepare(
-            "update notes set status = 0 where title = $1",
+            "update notes set status = $1 where title = $2",
         )?;
-    db.query(&statement, &[&title])
+    db.query(&statement, &[&note.status, &note.title])
 }
 
 pub fn insert_note(title: String, db: &mut PooledConnection<PostgresConnectionManager<NoTls>>) -> Result<Vec<Row>, Error> {

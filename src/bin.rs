@@ -40,9 +40,9 @@ fn create_note(note: Json<NewNote>, state: State<Storage>) -> Json<bool> {
 }
 
 #[post("/update", data = "<note>")]
-fn update_note(note: Json<NewNote>, state: State<Storage>) -> Json<bool> {
+fn update_note(note: Json<Note>, state: State<Storage>) -> Json<bool> {
     let mut db = state.database.get().unwrap();
-    let updated_note: bool = db::modify_note(note.title.to_string(), &mut db).is_ok();
+    let updated_note: bool = db::modify_note(&note.0, &mut db).is_ok();
     Json(updated_note)
 } 
 
@@ -61,3 +61,4 @@ fn rocket() -> rocket::Rocket {
         routes![get_notes, update_note, create_note, delete_notes, get_note],
     ).manage(storage)
 }
+

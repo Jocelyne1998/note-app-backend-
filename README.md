@@ -1,4 +1,4 @@
- ## Note app with Rocket  API
+## Note app with Rocket  API
 Microservices using the Rost language of a notes application using the backend which allows making a CRUD in the database.
 
 # You need to install Rust (follow the linking below)
@@ -21,5 +21,6 @@ docker-compose up -d
 docker exec -ti conection_postgres psql -U postgres -d library
 
 # Run Test
-cargo install cargo-watch
-cargo watch -x test
+Before run test you need to install cargo-waxth, run `cargo install cargo-watch` 
+Run `cargo watch -x test` to execute the unit tests
+
